@@ -1,0 +1,80 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id String [pk]
+  email String [unique, not null]
+  password String [not null]
+  role Role [not null, default: 'USER']
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  Order Order [not null]
+}
+
+Table ImageVariant {
+  id String [pk]
+  type ImageType [not null, default: 'SQUARE']
+  price Int [not null, default: 0]
+  license Licese [not null, default: 'PERSONAL']
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  Product Product
+  productId String
+}
+
+Table Product {
+  id String [pk]
+  name String [not null]
+  description String [not null]
+  imageURL String [not null]
+  variants ImageVariant [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  Order Order [not null]
+}
+
+Table Order {
+  id String [pk]
+  userId String [not null]
+  user User [not null]
+  Product Product
+  productId String
+  varients ImageType [not null]
+  razorpayOrderId String [unique, not null]
+  razorpayPaymentId String [unique, not null]
+  amount Int [not null]
+  status PaymentStatus [not null, default: 'PENDING']
+  downloadURL String [not null]
+  previewURL String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Enum Role {
+  USER
+  ADMIN
+}
+
+Enum ImageType {
+  SQUARE
+  WIDE
+  PORTRAIT
+}
+
+Enum Licese {
+  PERSONAL
+  COMMERCIAL
+}
+
+Enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+Ref: ImageVariant.productId > Product.id
+
+Ref: Order.userId > User.id
+
+Ref: Order.productId > Product.id

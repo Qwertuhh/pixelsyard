@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ImageType {
+  SQUARE
+  WIDE
+  PORTRAIT
+}
+
+enum Licese {
+  PERSONAL
+  COMMERCIAL
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Order     Order[]
+}
+
+model ImageVariant {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  type      ImageType @default(SQUARE)
+  price     Int       @default(0)
+  license   Licese    @default(PERSONAL)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Product   Product?  @relation(fields: [productId], references: [id])
+  productId String?   @db.ObjectId
+}
+
+model Product {
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String
+  imageURL    String
+  variants    ImageVariant[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  Order       Order[]
+}
+
+model Order {
+  id                String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String        @db.ObjectId
+  user              User          @relation(fields: [userId], references: [id])
+  Product           Product?      @relation(fields: [productId], references: [id])
+  productId         String?       @db.ObjectId
+  varients          ImageType
+  razorpayOrderId   String        @unique
+  razorpayPaymentId String        @unique
+  amount            Int
+  status            PaymentStatus @default(PENDING)
+  downloadURL       String
+  previewURL        String
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+}
