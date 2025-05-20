@@ -1,5 +1,8 @@
-
 # **PixelYard**
+
+>  [!ALERT]
+>
+> An Incomplete project becuase of service **age restictions.**
 
 An app that helps users showcase and sell their photography talent.
 
